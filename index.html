@@ -387,6 +387,15 @@
         
         <div class="word-management">
             <h3>📂 新しいカテゴリを追加</h3>
+            <div style="background: #fff3e0; padding: 15px; border-radius: 8px; margin-bottom: 15px; border-left: 4px solid #ff9a56;">
+                <h4 style="margin: 0 0 8px 0; color: #e65100; font-size: 14px;">✨ カスタム単語機能</h4>
+                <p style="margin: 0; font-size: 13px; color: #666; line-height: 1.4;">
+                    今日使いたいカードの単語を登録することもできます！<br>
+                    メモ帳などで単語リストを準備してコピペするとスムーズです。<br>
+                    <span style="color: #e65100; font-weight: bold;">読み上げは英語のみ対応しています</span><br>
+                    <span style="color: #999; font-size: 12px;">※リロードや閉じると消えます（一時的な追加機能）</span>
+                </p>
+            </div>
             <div class="add-category-form">
                 <div style="margin-bottom: 15px;">
                     <label for="new-category-name" style="display: block; margin-bottom: 5px; font-weight: bold;">カテゴリ名:</label>
@@ -449,6 +458,18 @@
         // 音声合成の設定
         function setupSpeech() {
             if ('speechSynthesis' in window) {
+                // すでにウォームアップ済みなら何もしない
+                if (!window.speechSynthesis._warmedUp) {
+                    // ダミー音声でエンジンを起動
+                    const dummy = new SpeechSynthesisUtterance('...');
+                    dummy.lang = 'en-US';
+                    dummy.rate = 1;
+                    dummy.volume = 0;
+                    dummy.onend = function() {
+                        window.speechSynthesis._warmedUp = true;
+                    };
+                    window.speechSynthesis.speak(dummy);
+                }
                 return true;
             } else {
                 alert('お使いのブラウザは音声合成に対応していません。');
@@ -479,6 +500,9 @@
         
         // ゲーム開始
         function startGame() {
+            // 音声機能を初期化（音声許可を取得）
+            setupSpeech();
+            
             // 選択されたカテゴリを取得
             const selectedCategories = [];
             document.querySelectorAll('input[type="checkbox"]:checked').forEach(cb => {
@@ -527,10 +551,12 @@
             
             showCurrentWord();
             
-            // ⭐ GPTの提案：ゲーム開始時に最初の単語を読み上げ
-            if (currentWords.length > 0) {
-                speakWord(currentWords[0]);
-            }
+            // ⭐ 音声エンジンのウォームアップ完了を待ってから読み上げ
+            setTimeout(() => {
+                if (currentWords.length > 0) {
+                    speakWord(currentWords[0]);
+                }
+            }, 1000); // 1秒待つ
         }
         
         // 現在の単語を表示
@@ -545,8 +571,8 @@
             document.getElementById('progress').textContent = 
                 `${currentIndex + 1} / ${currentWords.length}`;
             
-            // 自動読み上げ（音声が初期化済みの場合のみ）
-            if (speechInitialized) {
+            // 自動読み上げ（音声が初期化済み かつ 最初の単語でない場合のみ）
+            if (speechInitialized && currentIndex > 0) {
                 setTimeout(() => speakWord(word), 500);
             }
         }
