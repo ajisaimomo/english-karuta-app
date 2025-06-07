@@ -1,0 +1,756 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>カルタ読み上げアプリ</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #ff9a56 0%, #ffdb4d 50%, #ff6b35 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+        
+        .container {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        
+        h1 {
+            text-align: center;
+            color: #d63031;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+            text-shadow: 2px 2px 4px rgba(255,255,255,0.3);
+        }
+        
+        .section {
+            margin-bottom: 25px;
+            padding: 20px;
+            border: 2px solid #ff9a56;
+            border-radius: 10px;
+            background: linear-gradient(135deg, #fff8e1 0%, #ffecb3 100%);
+        }
+        
+        .section h3 {
+            margin-top: 0;
+            color: #e65100;
+            border-bottom: 2px solid #ff9a56;
+            padding-bottom: 10px;
+        }
+        
+        .checkbox-group {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin-bottom: 15px;
+        }
+        
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 12px;
+            border: 2px solid #ffb74d;
+            border-radius: 8px;
+            background: white;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .checkbox-item:hover {
+            border-color: #ff9a56;
+            background: #fff3e0;
+            transform: translateY(-1px);
+        }
+        
+        .checkbox-item input[type="checkbox"]:checked + label {
+            color: #d84315;
+            font-weight: bold;
+        }
+        
+        .radio-group {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        
+        .radio-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 15px;
+            border: 2px solid #ffb74d;
+            border-radius: 8px;
+            background: white;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .radio-item:hover {
+            border-color: #ff9a56;
+            background: #fff3e0;
+            transform: translateY(-1px);
+        }
+        
+        .radio-item input[type="radio"]:checked + label {
+            color: #d84315;
+            font-weight: bold;
+        }
+        
+        button {
+            background: linear-gradient(135deg, #ff6b35 0%, #ff9a56 100%);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            transition: all 0.3s;
+            margin: 5px;
+            box-shadow: 0 2px 8px rgba(255, 107, 53, 0.3);
+        }
+        
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(255, 107, 53, 0.4);
+            background: linear-gradient(135deg, #e55a2b 0%, #ff8c42 100%);
+        }
+        
+        button:disabled {
+            background: #a0aec0;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        
+        .game-area {
+            text-align: center;
+            margin-top: 30px;
+            padding: 30px;
+            background: linear-gradient(135deg, #ff6b35 0%, #ffa726 50%, #ff9a56 100%);
+            border-radius: 15px;
+            color: white;
+            box-shadow: 0 8px 32px rgba(255, 107, 53, 0.3);
+        }
+        
+        .current-word {
+            font-size: 3em;
+            font-weight: bold;
+            margin: 20px 0;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            min-height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .progress {
+            font-size: 1.2em;
+            margin-bottom: 20px;
+            opacity: 0.9;
+        }
+        
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+        
+        .word-management {
+            margin-top: 30px;
+            border-top: 3px solid #e2e8f0;
+            padding-top: 20px;
+        }
+        
+        .add-category-form {
+            background: linear-gradient(135deg, #fff8e1 0%, #ffecb3 100%);
+            padding: 20px;
+            border-radius: 10px;
+            border: 2px solid #ff9a56;
+        }
+        
+        textarea {
+            font-family: inherit;
+            font-size: 14px;
+            padding: 10px;
+            border: 2px solid #ffb74d;
+            border-radius: 6px;
+        }
+        
+        textarea:focus {
+            outline: none;
+            border-color: #ff9a56;
+            box-shadow: 0 0 0 3px rgba(255, 154, 86, 0.2);
+        }
+        
+        input[type="text"], select {
+            padding: 8px 12px;
+            border: 2px solid #ffb74d;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+        
+        input[type="text"]:focus, select:focus {
+            outline: none;
+            border-color: #ff9a56;
+            box-shadow: 0 0 0 3px rgba(255, 154, 86, 0.2);
+        }
+        
+
+        
+        input[type="checkbox"], input[type="radio"] {
+            margin: 0;
+        }
+        
+        .checkbox-item input[type="checkbox"]:disabled,
+        .radio-item input[type="radio"]:disabled {
+            opacity: 0.5;
+        }
+        
+        .checkbox-item:has(input:disabled),
+        .radio-item:has(input:disabled) {
+            opacity: 0.6;
+            cursor: not-allowed;
+            border-color: #e2e8f0;
+            background: #f7fafc;
+        }
+        
+        .checkbox-item:has(input:disabled):hover,
+        .radio-item:has(input:disabled):hover {
+            transform: none;
+            border-color: #e2e8f0;
+            background: #f7fafc;
+        }
+        
+        /* スマホ対応 */
+        @media (max-width: 600px) {
+            body, .container {
+                padding: 6px !important;
+                max-width: 100vw !important;
+            }
+            
+            .section, .add-category-form, .game-area {
+                padding: 10px !important;
+                font-size: 16px !important;
+                margin-bottom: 15px !important;
+            }
+            
+            .controls {
+                flex-direction: column !important;
+                gap: 8px !important;
+            }
+            
+            .current-word {
+                font-size: 2em !important;
+                min-height: 48px !important;
+            }
+            
+            button {
+                font-size: 16px !important;
+                padding: 10px 0 !important;
+                width: 100% !important;
+                box-sizing: border-box !important;
+            }
+            
+            input[type="text"], textarea, select {
+                font-size: 16px !important;
+                width: 100% !important;
+                max-width: 100% !important;
+                box-sizing: border-box !important;
+            }
+            
+            .checkbox-group, .radio-group {
+                flex-direction: column !important;
+                gap: 8px !important;
+            }
+            
+            h1 {
+                font-size: 2em !important;
+            }
+            
+            /* カテゴリ追加フォームの修正 */
+            .add-category-form div {
+                margin-bottom: 10px !important;
+            }
+            
+            .add-category-form label {
+                font-size: 14px !important;
+            }
+            
+            /* テキストエリアの高さ調整 */
+            textarea {
+                min-height: 80px !important;
+            }
+            
+            /* 説明文のサイズ調整 */
+            .add-category-form div[style*="font-size: 12px"] {
+                font-size: 12px !important;
+                line-height: 1.4 !important;
+            }
+        }
+        
+        label {
+            cursor: pointer;
+            user-select: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎴 英単語カルタアプリ</h1>
+        
+        <div class="section">
+            <h3>📂 カテゴリ選択</h3>
+            <div class="checkbox-group">
+                <div class="checkbox-item">
+                    <input type="checkbox" id="color" value="color">
+                    <label for="color">色 (Colors)</label>
+                </div>
+                <div class="checkbox-item">
+                    <input type="checkbox" id="numbers" value="numbers">
+                    <label for="numbers">数字 (Numbers)</label>
+                </div>
+                <div class="checkbox-item">
+                    <input type="checkbox" id="shapes" value="shapes">
+                    <label for="shapes">形 (Shapes)</label>
+                </div>
+                <div class="checkbox-item">
+                    <input type="checkbox" id="weather" value="weather">
+                    <label for="weather">季節と天気 (Weather)</label>
+                </div>
+                <div class="checkbox-item">
+                    <input type="checkbox" id="days" value="days">
+                    <label for="days">曜日 (Days)</label>
+                </div>
+                <div class="checkbox-item">
+                    <input type="checkbox" id="months" value="months">
+                    <label for="months">月 (Months)</label>
+                </div>
+            </div>
+        </div>
+        
+        <div class="section">
+            <h3>🔤 順序設定</h3>
+            <div class="radio-group">
+                <div class="radio-item">
+                    <input type="radio" id="natural" name="order" value="natural" checked>
+                    <label for="natural">順番通り</label>
+                </div>
+                <div class="radio-item">
+                    <input type="radio" id="alphabetical" name="order" value="alphabetical">
+                    <label for="alphabetical">ABC順</label>
+                </div>
+                <div class="radio-item">
+                    <input type="radio" id="random" name="order" value="random">
+                    <label for="random">ランダム</label>
+                </div>
+            </div>
+        </div>
+        
+        <div class="section">
+            <h3>🎵 音声設定</h3>
+            <div style="padding: 10px; background: #fff3e0; border-radius: 8px;">
+                <span style="color: #e65100; font-weight: bold;">🔊 自動読み上げ</span>
+                <div style="font-size: 14px; color: #666; margin-top: 5px;">
+                    新しい単語が表示されると自動で読み上げます
+                </div>
+            </div>
+        </div>
+        
+        <div style="text-align: center;">
+            <button onclick="startGame()" id="start-btn">🎮 ゲーム開始</button>
+        </div>
+        
+        <div class="game-area" id="game-area" style="display: none;">
+            <div class="progress" id="progress">準備中...</div>
+            <div class="current-word" id="current-word">単語が表示されます</div>
+            
+            <div class="controls">
+                <button onclick="repeatCurrentWord()" id="repeat-btn">🔄 もう一度読む</button>
+                <button onclick="nextWord()" id="next-btn">▶️ 次へ</button>
+                <button onclick="previousWord()" id="previous-btn">◀️ 戻る</button>
+            </div>
+            <div class="controls" style="margin-top: 10px;">
+                <button onclick="restartGame()" id="restart-btn" style="background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);">🔄 最初から</button>
+                <button onclick="endGame()" id="end-btn">⏹️ 終了</button>
+            </div>
+        </div>
+        
+        <div class="word-management">
+            <h3>📂 新しいカテゴリを追加</h3>
+            <div class="add-category-form">
+                <div style="margin-bottom: 15px;">
+                    <label for="new-category-name" style="display: block; margin-bottom: 5px; font-weight: bold;">カテゴリ名:</label>
+                    <input type="text" id="new-category-name" placeholder="例: 動物、食べ物、乗り物など" style="width: 100%; max-width: 300px;">
+                </div>
+                <div style="margin-bottom: 15px;">
+                    <label for="new-words-list" style="display: block; margin-bottom: 5px; font-weight: bold;">単語リスト:</label>
+                    <textarea id="new-words-list" rows="5" placeholder="apple, banana, orange, grape" style="width: 100%; max-width: 500px; resize: vertical;"></textarea>
+                    <div style="font-size: 12px; color: #666; margin-top: 5px;">
+                        💡 カンマ区切りで入力してください（最大50個）<br>
+                        例: apple, banana, orange, grape
+                    </div>
+                </div>
+                <button onclick="addCategory()" style="background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);">➕ カテゴリを追加</button>
+            </div>
+            <div style="margin-top: 20px; padding: 15px; background: #fff3e0; border-radius: 8px; border-left: 4px solid #ff9a56;">
+                <h4 style="margin: 0 0 10px 0; color: #e65100;">📈 レベル別学習のヒント</h4>
+                <p style="margin: 0; font-size: 14px; color: #666;">
+                    <strong>初級：</strong>色、数字、形<br>
+                    <strong>中級：</strong>曜日、月<br>
+                    <strong>上級：</strong>季節と天気
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 初期データ
+        let wordData = {
+            color: [
+                'yellow', 'red', 'pink', 'white', 'orange', 'purple', 'blue', 'green',
+                'black', 'brown', 'navy blue', 'gold', 'silver', 'gray', 'light blue', 'yellow green'
+            ],
+            numbers: [
+                'zero', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 
+                'ten', 'eleven', 'twelve', 'thirteen', 'fourteen', 'fifteen', 'sixteen', 
+                'seventeen', 'eighteen', 'nineteen', 'twenty', 'thirty', 'forty', 'fifty', 
+                'sixty', 'seventy', 'eighty', 'ninety', 'one hundred'
+            ],
+            shapes: [
+                'circle', 'diamond', 'heart', 'rectangle', 'square', 'star', 'triangle'
+            ],
+            weather: [
+                'sunny', 'rainy', 'cloudy', 'windy', 'hot', 'cold', 'snowy', 'stormy', 
+                'foggy', 'partly cloudy', 'tornado', 'lightning', 'rainbow'
+            ],
+            days: [
+                'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'
+            ],
+            months: [
+                'January', 'February', 'March', 'April', 'May', 'June', 
+                'July', 'August', 'September', 'October', 'November', 'December'
+            ]
+        };
+        
+        let currentWords = [];
+        let currentIndex = 0;
+        let isGameActive = false;
+        
+        // 音声合成の設定
+        function setupSpeech() {
+            if ('speechSynthesis' in window) {
+                return true;
+            } else {
+                alert('お使いのブラウザは音声合成に対応していません。');
+                return false;
+            }
+        }
+        
+        let speechInitialized = false;
+        
+        // 単語を読み上げる
+        function speakWord(word) {
+            if (!setupSpeech()) return;
+            
+            // 音声が初期化されていることをマーク
+            speechInitialized = true;
+            
+            // 現在の読み上げを停止
+            window.speechSynthesis.cancel();
+            
+            const utterance = new SpeechSynthesisUtterance(word);
+            utterance.lang = 'en-US';
+            utterance.rate = 0.8;
+            utterance.pitch = 1.0;
+            utterance.volume = 1.0;
+            
+            window.speechSynthesis.speak(utterance);
+        }
+        
+        // ゲーム開始
+        function startGame() {
+            // 選択されたカテゴリを取得
+            const selectedCategories = [];
+            document.querySelectorAll('input[type="checkbox"]:checked').forEach(cb => {
+                selectedCategories.push(cb.value);
+            });
+            
+            if (selectedCategories.length === 0) {
+                alert('少なくとも1つのカテゴリを選択してください。');
+                return;
+            }
+            
+            // 単語リストを作成
+            currentWords = [];
+            selectedCategories.forEach(category => {
+                currentWords = currentWords.concat(wordData[category]);
+            });
+            
+            if (currentWords.length === 0) {
+                alert('選択されたカテゴリに単語がありません。');
+                return;
+            }
+            
+            // 順序設定
+            const order = document.querySelector('input[name="order"]:checked').value;
+            if (order === 'alphabetical') {
+                currentWords.sort();
+            } else if (order === 'random') {
+                // ランダムシャッフル
+                for (let i = currentWords.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [currentWords[i], currentWords[j]] = [currentWords[j], currentWords[i]];
+                }
+            }
+            // natural の場合は何もしない（登録順のまま）
+            
+            currentIndex = 0;
+            isGameActive = true;
+            speechInitialized = true; // 音声はゲーム開始で有効化
+            
+            // UI更新
+            document.getElementById('game-area').style.display = 'block';
+            document.getElementById('start-btn').style.display = 'none';
+            
+            // ゲーム中は設定を無効化
+            disableSettings();
+            
+            showCurrentWord();
+            
+            // ⭐ GPTの提案：ゲーム開始時に最初の単語を読み上げ
+            if (currentWords.length > 0) {
+                speakWord(currentWords[0]);
+            }
+        }
+        
+        // 現在の単語を表示
+        function showCurrentWord() {
+            if (currentIndex >= currentWords.length) {
+                endGame();
+                return;
+            }
+            
+            const word = currentWords[currentIndex];
+            document.getElementById('current-word').textContent = word;
+            document.getElementById('progress').textContent = 
+                `${currentIndex + 1} / ${currentWords.length}`;
+            
+            // 自動読み上げ（音声が初期化済みの場合のみ）
+            if (speechInitialized) {
+                setTimeout(() => speakWord(word), 500);
+            }
+        }
+        
+        // 現在の単語を読み上げ
+        function speakCurrentWord() {
+            if (currentIndex < currentWords.length) {
+                speakWord(currentWords[currentIndex]);
+            }
+        }
+        
+        // 現在の単語をもう一度読み上げ
+        function repeatCurrentWord() {
+            if (currentIndex < currentWords.length) {
+                speakWord(currentWords[currentIndex]);
+            }
+        }
+        
+        // ゲームを最初からやり直し
+        function restartGame() {
+            if (!isGameActive) return;
+            
+            if (confirm('🔄 最初からやり直しますか？\n\n現在の進行状況は失われます。')) {
+                // 選択されたカテゴリを取得
+                const selectedCategories = [];
+                document.querySelectorAll('input[type="checkbox"]:checked').forEach(cb => {
+                    selectedCategories.push(cb.value);
+                });
+                
+                // 単語リストを再作成
+                currentWords = [];
+                selectedCategories.forEach(category => {
+                    currentWords = currentWords.concat(wordData[category]);
+                });
+                
+                // 順序設定を再適用
+                const order = document.querySelector('input[name="order"]:checked').value;
+                if (order === 'alphabetical') {
+                    currentWords.sort();
+                } else if (order === 'random') {
+                    // 新しくランダムシャッフル
+                    for (let i = currentWords.length - 1; i > 0; i--) {
+                        const j = Math.floor(Math.random() * (i + 1));
+                        [currentWords[i], currentWords[j]] = [currentWords[j], currentWords[i]];
+                    }
+                }
+                // natural の場合は何もしない（登録順のまま）
+                
+                // 最初から開始
+                currentIndex = 0;
+                showCurrentWord();
+            }
+        }
+        
+        // 次の単語へ
+        function nextWord() {
+            if (!isGameActive) return;
+            
+            currentIndex++;
+            showCurrentWord();
+        }
+        
+        // 前の単語へ
+        function previousWord() {
+            if (!isGameActive) return;
+            
+            if (currentIndex > 0) {
+                currentIndex--;
+                showCurrentWord();
+            }
+        }
+        
+        // ゲーム終了
+        function endGame() {
+            isGameActive = false;
+            document.getElementById('game-area').style.display = 'none';
+            document.getElementById('start-btn').style.display = 'inline-block';
+            
+            // 設定を再有効化
+            enableSettings();
+            
+            if (currentIndex >= currentWords.length) {
+                alert('🎉 すべての単語が終了しました！お疲れさまでした！');
+            }
+        }
+        
+        // 設定を無効化
+        function disableSettings() {
+            // カテゴリ選択を無効化
+            document.querySelectorAll('input[type="checkbox"]').forEach(cb => {
+                cb.disabled = true;
+            });
+            // 順序設定を無効化
+            document.querySelectorAll('input[name="order"]').forEach(radio => {
+                radio.disabled = true;
+            });
+        }
+        
+        // 設定を有効化
+        function enableSettings() {
+            // カテゴリ選択を有効化
+            document.querySelectorAll('input[type="checkbox"]').forEach(cb => {
+                cb.disabled = false;
+            });
+            // 順序設定を有効化
+            document.querySelectorAll('input[name="order"]').forEach(radio => {
+                radio.disabled = false;
+            });
+        }
+        
+        // カテゴリと単語を一括追加
+        function addCategory() {
+            const categoryName = document.getElementById('new-category-name').value.trim();
+            const wordsText = document.getElementById('new-words-list').value.trim();
+            
+            // バリデーション：カテゴリ名
+            if (categoryName === '') {
+                alert('❌ カテゴリ名を入力してください。');
+                return;
+            }
+            
+            // バリデーション：単語リスト
+            if (wordsText === '') {
+                alert('❌ 単語を入力してください。');
+                return;
+            }
+            
+            // 単語を分割して整理
+            const words = wordsText.split(',').map(word => word.trim()).filter(word => word !== '');
+            
+            // バリデーション：単語数
+            if (words.length === 0) {
+                alert('❌ 有効な単語を入力してください。');
+                return;
+            }
+            
+            if (words.length > 50) {
+                alert(`❌ 50個以下にしてください（現在：${words.length}個）`);
+                return;
+            }
+            
+            // カテゴリ名の重複チェック
+            const categoryKey = categoryName.toLowerCase().replace(/\s+/g, '_');
+            if (wordData[categoryKey]) {
+                alert(`❌ カテゴリ「${categoryName}」は既に存在します。`);
+                return;
+            }
+            
+            // 新しいカテゴリを追加
+            wordData[categoryKey] = words;
+            
+            // カテゴリ選択のチェックボックスを追加
+            addCategoryCheckbox(categoryKey, categoryName);
+            
+            // フォームをクリア
+            document.getElementById('new-category-name').value = '';
+            document.getElementById('new-words-list').value = '';
+            
+            alert(`✅ カテゴリ「${categoryName}」を追加しました！\n単語数: ${words.length}個`);
+        }
+        
+        // カテゴリ選択にチェックボックスを追加
+        function addCategoryCheckbox(categoryKey, categoryName) {
+            const checkboxGroup = document.querySelector('.checkbox-group');
+            
+            const checkboxItem = document.createElement('div');
+            checkboxItem.className = 'checkbox-item';
+            checkboxItem.innerHTML = `
+                <input type="checkbox" id="${categoryKey}" value="${categoryKey}">
+                <label for="${categoryKey}">${categoryName}</label>
+            `;
+            
+            checkboxGroup.appendChild(checkboxItem);
+        }
+        
+        // キーボードショートカット
+        document.addEventListener('keydown', function(e) {
+            if (!isGameActive) return;
+            
+            if (e.code === 'Space') {
+                e.preventDefault();
+                nextWord();
+            } else if (e.code === 'Enter') {
+                e.preventDefault();
+                speakCurrentWord();
+            } else if (e.code === 'KeyR') {
+                e.preventDefault();
+                repeatCurrentWord();
+            } else if (e.code === 'KeyS' && e.ctrlKey) {
+                e.preventDefault();
+                restartGame();
+            } else if (e.code === 'ArrowLeft') {
+                e.preventDefault();
+                previousWord();
+            } else if (e.code === 'ArrowRight') {
+                e.preventDefault();
+                nextWord();
+            }
+        });
+        
+        // 初期化
+        window.addEventListener('load', function() {
+            setupSpeech();
+        });
+    </script>
+</body>
+</html>
